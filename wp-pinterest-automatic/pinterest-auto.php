@@ -1189,7 +1189,7 @@
 	require_once 'plog.php';
 	
 	//license
-	require_once 'plicense.php';
+	//require_once 'license.php';
 	
 	
 	

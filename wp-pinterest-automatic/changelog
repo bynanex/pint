@@ -42,7 +42,7 @@ Fix: post_excerpt tag now removes the shortcodes
 
 Version 4.9.0 (22 September 2018)
 - NEW: Gutenberg support
-- NEW: WooCommerce product attributes can now be CCC  added to the pin description
+- NEW: WooCommerce product attributes can now be added to the pin description
 - Fix: Idle time is now 1 hour 
 
 @2 September 2018 v4.8.0

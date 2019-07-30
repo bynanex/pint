@@ -1,41 +1,25 @@
 <?php 
 
-$pin_image = "https://localhost/wordpress/wp-content/uploads/2019/04/56173335_2332485606802342_6501383908255334400_n.png-120x100.jpg";
+//curl ini
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_HEADER,0);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+curl_setopt($ch, CURLOPT_TIMEOUT,20);
+curl_setopt($ch, CURLOPT_REFERER, 'http://www.bing.com/');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8');
+curl_setopt($ch, CURLOPT_MAXREDIRS, 5); // Good leeway for redirections.
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); // Many login forms redirect at least once.
+curl_setopt($ch, CURLOPT_COOKIEJAR , "cookie.txt");
 
-if(  preg_match( '{-(\d*)x(\d*)\.[a-z]*$}', $pin_image,$matches )){
+//curl get
+$x='error';
+$url='https://pinterest.com';
+curl_setopt($ch, CURLOPT_HTTPGET, 1);
+curl_setopt($ch, CURLOPT_URL, trim($url));
+$exec=curl_exec($ch);
+$x=curl_error($ch);
 
-	$notSmallPin_image = preg_replace('{-\d*x\d*(\.[a-z]*$)}', "$1", $notSmallPin_image) ;
-	
-	print_r($matches);
-	exit;
-	
-	if(isset($matches[1]) && is_numeric($matches[1])){
-		$smallImageWidth = $matches[1];
-		
-	}
-	
-	$wasSmallImage = true;
-}
-
-exit;
-
-//wp-load
-require_once('../../../wp-load.php');
-
-$media = get_attached_media( 'image' , 47813 );
-
-if(count($media) > 0){
-
-	foreach($media as $smedia){
-		
-		print_r($media);
-		exit;
-		
-		echo  '<img src="' . $smedia->guid . '" />' ;
-	}
-	
-}
-
-
+echo $exec.$x;
 
 ?>

@@ -44,8 +44,8 @@ function wp_pinterest_automatic_pin_function() {
 	} 
 
 	//CHECK LICENSE
-	$licenseactive=get_option('wp_pinterest_automatic_license_active','');
-	if(trim($licenseactive) == '' ) {
+	$licenseactive=true;
+	if(trim($licenseactive) == 'valid' ) {
 		echo '<br>Error:The license is not active, please activate the license first.';
 		return ;
 	}

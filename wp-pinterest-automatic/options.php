@@ -13,8 +13,7 @@
 	<?php
 	
 	//license ini
-	$licenseactive=get_option('wp_pinterest_automatic_license_active','');
-	
+	$licenseactive=true;
 
 	
 	//purchase check 
@@ -76,7 +75,7 @@
 		update_option('wp_pinterest_automatic_license_active', 'active');
 		update_option('wp_pinterest_automatic_license_active_date', time('now'));
 		$licenseactive=get_option('wp_pinterest_automatic_license_active','');
-
+			
 	}
 	
 	// SAVE DATA
@@ -110,6 +109,8 @@
 	
  
 	$wp_pinterest_default = get_option ( 'wp_pinterest_default', '[post_title]' );
+	$wp_pinterest_default_title = get_option ( 'wp_pinterest_default_title', '[post_title]' );
+	
 	$wp_pinterest_default_more = get_option('wp_pinterest_default_more','Check more at [post_link]');
 	$wp_pinterest_board = get_option ( 'wp_pinterest_board', '' );
 	$wp_pinterest_options = get_option ( 'wp_pinterest_options', array (
@@ -244,6 +245,13 @@
 		 			
 		 			<table class="form-table">
 							<tbody>
+								
+								<tr>
+									<th scope="row"><label> Default Pin Title   </label></th>
+									<td><input class="widefat" value="<?php echo stripslashes(htmlspecialchars($wp_pinterest_default_title, ENT_QUOTES, "UTF-8"))  ?>" name="wp_pinterest_default_title" id="field-wp_pinterest_default" required="required" type="text">
+	
+										 </td>
+								</tr>
 								
 								<tr>
 									<th scope="row"><label> Default Pin Text   </label></th>
