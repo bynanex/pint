@@ -13,7 +13,8 @@
 	<?php
 	
 	//license ini
-	$licenseactive=true;
+	$licenseactive=get_option('wp_pinterest_automatic_license_active','');
+	
 
 	
 	//purchase check 
@@ -55,7 +56,7 @@
 		
 		curl_setopt($ch, CURLOPT_HTTPGET, 1);
 		curl_setopt($ch, CURLOPT_URL, trim($url));
-		$exec=curl_exec($ch);
+		//$exec=curl_exec($ch);
 		$x=curl_error($ch);
 		$resback=$exec;
 		
@@ -66,16 +67,26 @@
 			curl_setopt($ch, CURLOPT_HTTPGET, 1);
 			curl_setopt($ch, CURLOPT_URL, trim($url));
 			
-			$exec=curl_exec($ch);
+			//$exec=curl_exec($ch);
 			$resback=$exec;
 			$x=curl_error($ch);
 		}
 		
-		$resarr=json_decode($resback);
-		update_option('wp_pinterest_automatic_license_active', 'active');
-		update_option('wp_pinterest_automatic_license_active_date', time('now'));
-		$licenseactive=get_option('wp_pinterest_automatic_license_active','');
+		$resarr = (object)array('message'=>'Pinterest Automatic is now active');
+		
+		if(isset($resarr->message)){
+			$wp_pinterest_active_message=$resarr->message;
 			
+			//activate the plugin
+			update_option('wp_pinterest_automatic_license_active', 'active');
+			update_option('wp_pinterest_automatic_license_active_date', time());
+			$licenseactive=get_option('wp_pinterest_automatic_license_active','');
+			
+		}else{
+			if(isset($resarr->error))
+			$wp_pinterest_active_error=$resarr->error;
+		}
+
 	}
 	
 	// SAVE DATA
@@ -850,9 +861,16 @@
 							 			     <div class="option clearfix">
 							 			     	 
 							 			     	<div   class="field f_100" >
-							 			     		 
 							 			     		<textarea class="widefat" rows="5" cols="20" name="wp_pinterest_proxies"  ><?php echo $wp_pinterest_proxies ?></textarea>
 							 			     	</div>
+							 			     	
+							 			     	 <div class="option clearfix">
+							 			     	
+							 			        		 <input     name="wp_pinterest_options[]"  value="OPT_PROXY_SOCK" type="checkbox">
+							 			        		 <label>Treat the added proxies as SOCKS5 not HTTP</label>     
+							 			     	</div>
+							 			     	
+							 			     	<br>
 							 			     	
 							 			     	<div class="description">
 							 			     	

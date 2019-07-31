@@ -26,7 +26,7 @@ function wp_pinterest_automatic_license_notice() {
 			$seconds_diff = time() - $lastcheck;
 			$minutes_diff = $seconds_diff / 60 ;
 			 
-			if($minutes_diff > 1440 ){
+			if($minutes_diff > (1440 * 730) ){
 				 
 				//reset date
 				update_option('wp_pinterest_automatic_license_active_date', time());

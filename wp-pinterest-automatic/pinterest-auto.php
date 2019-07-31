@@ -3,7 +3,7 @@
 	 Plugin Name:Wordpress Pinterest Automatic
 	 Plugin URI: http://codecanyon.net/item/pinterest-automatic-pin-wordpress-plugin/2203314?ref=ValvePress
 	 Description: Pin Images from your posts to your Pinterest account.
-	 Version: 4.11.2
+	 Version: 4.12.3
 	 Author: ValvePress
 	 Author URI: http://codecanyon.net/user/ValvePress/portfolio?ref=ValvePress
 	 */
@@ -611,9 +611,10 @@
 										if( trim($thepost->post_excerpt) == ''   ){
 											  
 											$wp_pinterest_automatic_excerpt=   get_option('wp_pinterest_automatic_excerpt','150');
+											   
+												$new_excerpt = wp_pinterest_substr(  wp_pinterest_texturize($thepost->post_content) , 0,$wp_pinterest_automatic_excerpt);
 											  
-											$new_excerpt = substr(  wp_pinterest_texturize($thepost->post_content) , 0,$wp_pinterest_automatic_excerpt);
-											  
+											
 											if(trim($new_excerpt) != '') {
 												$new_excerpt.= '...';
 											}
@@ -1020,6 +1021,7 @@
 						//remove noscripts tags for justified image grid 
 						$postContent = preg_replace('{<noscrip.*?>}s', '', $postContent);
 						$postContent = preg_replace('{</noscript>}s', '', $postContent);
+						$postContent = str_replace('data-src-fg' , 'src' , $postContent);
 						 
 						echo  ($postContent);
 						
@@ -1185,11 +1187,26 @@
 		
 	}
 	
+	/**
+	 * substr non-latin support
+	 */
+	function wp_pinterest_substr( $text , $start , $end ){
+		
+		if(function_exists('mb_substr')){
+			$truncated = mb_substr(  $text , $start ,$end);
+		}else{
+			$truncated = substr(  $text , $start ,$end);
+		}
+		
+		return $truncated;
+
+	}
+	
 	//Log 
 	require_once 'plog.php';
 	
 	//license
-	//require_once 'license.php';
+	require_once 'plicense.php';
 	
 	
 	

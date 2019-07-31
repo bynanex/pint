@@ -537,8 +537,7 @@ function pinterest_login(){
 
 function pinterest_pin($tocken,$board,$details,$link,$imgsrc ,$wp_pinterest_options = false,$post_id = false){
  
-	
-	
+	  
  	//validate board
  	//getting board
 	$wp_pinterest_boards = get_option ( 'wp_pinterest_boards', array (
@@ -796,13 +795,8 @@ function pinterest_pin($tocken,$board,$details,$link,$imgsrc ,$wp_pinterest_opti
 		$imgsrc = 'http:'.$imgsrc;
 	}
 	
-	 //check if we are deactivated and need more link
-	if( (time() < $deactive || in_array('OPT_REGULAR', $wp_pinterest_options)  ) && ! stristr($details, '[post_link]') ){
-		$wp_pinterest_default_more = get_option('wp_pinterest_default_more','Check more at [post_link]');
-		$wp_pinterest_default_more = str_replace('[post_link]', $link.' ', $wp_pinterest_default_more);
-		$details = $details.' '.$wp_pinterest_default_more;
-	}
-	
+
+ 	
 	// srtip shortcodes
 	$details = strip_shortcodes($details);
 	
@@ -819,15 +813,22 @@ function pinterest_pin($tocken,$board,$details,$link,$imgsrc ,$wp_pinterest_opti
 		$pin_title = strip_tags($pin_title); //plain text
 		
 		 //100 char limit for title 
-		$short_pin_title = substr($pin_title, 0 , 93);
+		$short_pin_title = wp_pinterest_substr($pin_title, 0 , 93);
 		
 		if($pin_title != $short_pin_title) $pin_title = $short_pin_title . '...';
 		
 	}else{
 		$pin_title = '';
 	}
-	
+
+	//check if we are deactivated and need more link
+	if( (time() < $deactive || in_array('OPT_REGULAR', $wp_pinterest_options)  ) && ! stristr($details, '[post_link]') ){
+		$wp_pinterest_default_more = get_option('wp_pinterest_default_more','Check more at [post_link]');
+		$wp_pinterest_default_more = str_replace('[post_link]', $link.' ', $wp_pinterest_default_more);
+		$details = $details.' '.$wp_pinterest_default_more;
+	}
 	 
+ 
 	
 	//maximum 500 check
 	if(function_exists('mb_strlen')){
@@ -1011,7 +1012,7 @@ function pinterest_pin($tocken,$board,$details,$link,$imgsrc ,$wp_pinterest_opti
 	}
 	 
 	
-	if ( stristr($exec,'status":"success')  ){
+	if ( stristr($exec,'status":"success') || stristr($exec,'error":null')  ){
  
  		//extract pin url
 		//preg_match_all("{\"board\",\"id\":\"(.*?)\"\},\"id\":\"(.*?)\"\},\"error\":null}",$exec,$matches,PREG_PATTERN_ORDER);
@@ -1073,10 +1074,10 @@ function pinterest_pin($tocken,$board,$details,$link,$imgsrc ,$wp_pinterest_opti
 		}
 
 		
-		if ( stristr($exec,'429 Unknown') ||  stristr($exec,'combat spam') || stristr($exec, 'had to block pins') || stristr($exec, 'reset your password') ||  stristr($exec,'429 Too Many Requests') ||  stristr($exec,'api_error_code":9,') ){
+		if ( stristr($exec,'429 Unknown') ||  stristr($exec,'combat spam') || stristr($exec, 'had to block pins') || stristr($exec, 'reset your password') ||  stristr($exec,'429 Too Many Requests') ||  stristr($exec,'api_error_code":9') ){
 			
 				
-			if(stristr($exec,'combat spam') || stristr($exec,'429 Unknown') ||  stristr($exec,'429 Too Many Requests') ||  stristr($exec,'api_error_code":9,') ){
+			if(stristr($exec,'combat spam') || stristr($exec,'429 Unknown') ||  stristr($exec,'429 Too Many Requests') ||  stristr($exec,'api_error_code":9') ){
 				$this->log('Slow Request',"Pinterest told us that we have pinned alot and we should slow down, The plugin will idle for one hour then try to pin again. ") ;
 			}elseif(stristr($exec, 'had to block pins')){
 				$this->log('Bad Server IP',"Server ip is flagged for spam , we will deactivate pinning for one hour ") ;
@@ -1167,8 +1168,14 @@ function proxify(){
 					
 			
 				}else{
-					curl_setopt($this->ch, CURLOPT_PROXY, $proxy );
+					curl_setopt($this->ch, CURLOPT_PROXY, trim($proxy) );
 				}
+				
+				//sock5
+				if( in_array('OPT_PROXY_SOCK', $wp_pinterest_options)    ){
+					curl_setopt($this->ch , CURLOPT_PROXYTYPE,  CURLPROXY_SOCKS5 );
+				}
+				
  				 
 				$exec=curl_exec($this->ch);
 				$x=curl_error($this->ch);
@@ -1472,7 +1479,7 @@ function truncateHtml($text, $length = 100, $ending = '...', $exact = false, $co
 						}
 					}
 				}
-				$truncate .= substr($line_matchings[2], 0, $left+$entities_length);
+				$truncate .= wp_pinterest_substr($line_matchings[2], 0, $left+$entities_length);
 				// maximum lenght is reached, so get off the loop
 				break;
 			} else {
@@ -1488,7 +1495,7 @@ function truncateHtml($text, $length = 100, $ending = '...', $exact = false, $co
 		if (strlen($text) <= $length) {
 			return $text;
 		} else {
-			$truncate = substr($text, 0, $length - strlen($ending));
+			$truncate = wp_pinterest_substr($text, 0, $length - strlen($ending));
 		}
 	}
 	// if the words shouldn't be cut in the middle...
@@ -1497,7 +1504,7 @@ function truncateHtml($text, $length = 100, $ending = '...', $exact = false, $co
 		$spacepos = strrpos($truncate, ' ');
 		if (isset($spacepos)) {
 			// ...and cut the text in this position
-			$truncate = substr($truncate, 0, $spacepos);
+			$truncate = wp_pinterest_substr($truncate, 0, $spacepos);
 		}
 	}
 	// add the defined ending to the text

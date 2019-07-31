@@ -44,8 +44,8 @@ function wp_pinterest_automatic_pin_function() {
 	} 
 
 	//CHECK LICENSE
-	$licenseactive=true;
-	if(trim($licenseactive) == 'valid' ) {
+	$licenseactive=get_option('wp_pinterest_automatic_license_active','');
+	if(trim($licenseactive) == '' ) {
 		echo '<br>Error:The license is not active, please activate the license first.';
 		return ;
 	}
@@ -258,6 +258,9 @@ function wp_pinterest_automatic_pin_function() {
 			
 			 //check thumbnail url 
 			$post_title=$post->post_title;
+			
+			//remove automatic filter that removes gallery images
+			if(function_exists('wp_automatic_the_content_filter')) remove_filter( 'the_content', 'wp_automatic_the_content_filter');
 			
 			if( stristr($post->post_content, 'nextpage') ) {
 				$cont = apply_filters( 'the_content' , $post->post_content);
@@ -1046,7 +1049,10 @@ function wp_pinterest_automatic_pin_function() {
 						//excerpt generation
 						if( stristr($pintext, 'post_excerpt') && trim($thepost->post_excerpt) == '') {
 							$wp_pinterest_automatic_excerpt=get_option('wp_pinterest_automatic_excerpt','150');
-							$new_excerpt = substr(  wp_pinterest_texturize( $thepost->post_content) , 0,$wp_pinterest_automatic_excerpt);
+							
+						 
+								$new_excerpt = wp_pinterest_substr(  wp_pinterest_texturize($thepost->post_content) , 0,$wp_pinterest_automatic_excerpt);
+						 
 						
 							if(trim($new_excerpt) != '') {
 								$new_excerpt.= '...';
